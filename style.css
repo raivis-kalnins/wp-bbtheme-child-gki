@@ -1,0 +1,20 @@
+/*
+Theme Name: GKI Engineering Child Theme
+Theme URI: https://github.com/
+Description: GKI Engineering child theme with Bootstrap/BBbuilder-ready homepage, Gutenberg template, contact form styling and brand assets.
+Author: WP Raivis
+Author URI: https://digitalpulse.click
+Template: wp-bbtheme
+Requires at least: 6.6
+Tested up to: 6.8.1
+Requires PHP: 8.0
+Version: 28.0.0
+Text Domain: wp-bbtheme-child
+*/
+
+:root {
+  --wp-theme-child-brand: #1d4ed8;
+  --wp-theme-child-accent: #0f172a;
+  --wp-theme-child-surface: #f8fafc;
+}
+body { accent-color: var(--wp-theme-child-brand); }

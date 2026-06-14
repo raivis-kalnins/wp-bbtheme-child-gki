@@ -1,0 +1,23 @@
+{
+  "version": 3,
+  "settings": {
+    "layout": {
+      "contentSize": "960px",
+      "wideSize": "1340px"
+    },
+    "color": {
+      "palette": [
+        {
+          "slug": "gki-navy",
+          "color": "#063766",
+          "name": "GKI Navy"
+        },
+        {
+          "slug": "gki-blue",
+          "color": "#0c67af",
+          "name": "GKI Blue"
+        }
+      ]
+    }
+  }
+}
