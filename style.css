@@ -8,7 +8,7 @@ Template: wp-bbtheme
 Requires at least: 6.6
 Tested up to: 6.8.1
 Requires PHP: 8.0
-Version: 28.0.0
+Version: 55.0.0
 Text Domain: wp-bbtheme-child
 */
 
@@ -18,3 +18,7 @@ Text Domain: wp-bbtheme-child
   --wp-theme-child-surface: #f8fafc;
 }
 body { accent-color: var(--wp-theme-child-brand); }
+/* v55: remove WordPress block top spacing above homepage hero */
+body :where(.wp-site-blocks) > * {
+  margin-block-start: 0 !important;
+}

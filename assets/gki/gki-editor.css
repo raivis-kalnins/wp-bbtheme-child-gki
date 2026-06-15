@@ -1,0 +1,200 @@
+
+/* GKI v52 editor safety layer: keep homepage blocks editable and avoid frontend layout tricks breaking the editor canvas. */
+.editor-styles-wrapper #gki-site{
+  max-width:980px;
+  margin:0 auto;
+  overflow:visible;
+  background:#fff;
+}
+.editor-styles-wrapper #gki-site .gki-section{padding:64px 24px}
+.editor-styles-wrapper #gki-site .gki-container{
+  width:100%;
+  max-width:920px;
+  margin-inline:auto;
+}
+.editor-styles-wrapper #gki-site .gki-hero{
+  min-height:420px;
+  padding:48px 24px;
+}
+.editor-styles-wrapper #gki-site .gki-hero-copy{
+  width:100%;
+  max-width:560px;
+}
+.editor-styles-wrapper #gki-site .gki-hero-media,
+.editor-styles-wrapper #gki-site .hero-card{display:none}
+.editor-styles-wrapper #gki-site .gki-services{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:16px;
+}
+.editor-styles-wrapper #gki-site .gki-service-card{
+  min-width:0;
+  min-height:130px;
+}
+.editor-styles-wrapper #gki-site .gki-service-icon img{
+  object-fit:contain;
+  clip:auto;
+  clip-path:none;
+  background:transparent;
+}
+.editor-styles-wrapper #gki-site .gki-dark-section{
+  padding:58px 28px;
+  background:#063766;
+  color:#fff;
+}
+.editor-styles-wrapper #gki-site .gki-dark-section h2{
+  color:#fff;
+  background:transparent;
+}
+.editor-styles-wrapper #gki-site .gki-why{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:18px;
+  margin:22px 0 38px;
+  align-items:stretch;
+}
+.editor-styles-wrapper #gki-site .gki-why>.block-editor-inner-blocks,
+.editor-styles-wrapper #gki-site .gki-why>.block-editor-inner-blocks>.block-editor-block-list__layout{display:contents}
+.editor-styles-wrapper #gki-site .gki-why-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-height:76px;
+  color:#fff;
+  background:transparent;
+  text-align:left;
+}
+.editor-styles-wrapper #gki-site .gki-why-icon{
+  width:52px;
+  height:52px;
+  flex:0 0 52px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#fff;
+  color:#063766;
+  overflow:hidden;
+  font-size:0;
+}
+.editor-styles-wrapper #gki-site .gki-why-icon svg{
+  width:28px;
+  height:28px;
+  display:block;
+  fill:none;
+  stroke:#063766;
+  stroke-width:2.2;
+}
+.editor-styles-wrapper #gki-site .gki-why-item p{
+  margin:0;
+  color:rgba(255,255,255,.92);
+  font-size:13px;
+  line-height:1.38;
+  writing-mode:horizontal-tb;
+  word-break:normal;
+  overflow-wrap:normal;
+  white-space:normal;
+}
+.editor-styles-wrapper #gki-site .gki-why-item strong{
+  color:#fff;
+  font-size:14px;
+  line-height:1.2;
+}
+.editor-styles-wrapper #gki-site .gki-info-row{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:24px;
+  align-items:stretch;
+}
+.editor-styles-wrapper #gki-site .gki-info-row>.block-editor-inner-blocks,
+.editor-styles-wrapper #gki-site .gki-info-row>.block-editor-inner-blocks>.block-editor-block-list__layout{display:contents}
+.editor-styles-wrapper #gki-site .gki-info-card{
+  min-height:210px;
+  padding:26px;
+  border-radius:14px;
+  background:#fff;
+  color:#063766;
+  overflow:visible;
+}
+.editor-styles-wrapper #gki-site .gki-info-card h2{color:#063766}
+.editor-styles-wrapper #gki-site .gki-info-card p{color:#12304f}
+.editor-styles-wrapper #gki-site .gki-form-card .h-captcha,
+.editor-styles-wrapper #gki-site .gki-form-card .gki-hcaptcha-field,
+.editor-styles-wrapper #gki-site .gki-form-card .wpbb-field--captcha{
+  display:block;
+  position:static;
+  visibility:visible;
+  opacity:1;
+  min-height:78px;
+  clear:both;
+  grid-column:1/-1;
+}
+@media(max-width:900px){
+  .editor-styles-wrapper #gki-site .gki-services{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .editor-styles-wrapper #gki-site .gki-why{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .editor-styles-wrapper #gki-site .gki-info-row{grid-template-columns:1fr}
+}
+
+
+/* GKI v53 editor polish: make the canvas match the front end without invalid block warnings. */
+.editor-styles-wrapper #gki-site h1,
+.editor-styles-wrapper #gki-site .gki-hero h1{
+  font-weight:700;
+}
+.editor-styles-wrapper #gki-site .gki-why-item > .block-editor-inner-blocks,
+.editor-styles-wrapper #gki-site .gki-why-item > .block-editor-inner-blocks > .block-editor-block-list__layout{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+.editor-styles-wrapper #gki-site .gki-why-item .block-editor-block-list__block,
+.editor-styles-wrapper #gki-site .gki-why-item .wp-block-html{
+  margin-top:0;
+  margin-bottom:0;
+}
+.editor-styles-wrapper #gki-site .gki-why-item .wp-block-html textarea,
+.editor-styles-wrapper #gki-site .gki-info-card .wp-block-html textarea{
+  min-height:44px;
+  max-height:72px;
+  font-size:12px;
+  line-height:1.25;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+.editor-styles-wrapper #gki-site .gki-coverage{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:18px;
+}
+.editor-styles-wrapper #gki-site .gki-chip{
+  display:inline-flex;
+  padding:0;
+  border:0;
+  background:transparent;
+}
+.editor-styles-wrapper #gki-site .gki-chip .wp-block-button__link{
+  min-width:126px;
+  min-height:44px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:0 22px;
+  border:1px solid rgba(11,110,232,.55);
+  border-radius:999px;
+  background:#fff;
+  color:#0b6ee8;
+  font-size:14px;
+  font-weight:900;
+  box-shadow:none;
+}
+.editor-styles-wrapper #gki-site .gki-chip .wp-block-button__link:before{
+  content:"📍";
+  font-size:13px;
+  line-height:1;
+}
+.editor-styles-wrapper #gki-site .block-editor-warning,
+.editor-styles-wrapper #gki-site .block-editor-block-warning{
+  writing-mode:horizontal-tb;
+  max-width:100%;
+}

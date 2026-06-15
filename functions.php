@@ -84,56 +84,17 @@ add_action('wp_head', 'wp_theme_child_seo_meta', 5);
 
 
 function gki_child_enqueue_home_assets() {
-    wp_enqueue_style('gki-home', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', ['wp-theme-child-style'], '36.0.0');
-    wp_enqueue_script('gki-home', get_stylesheet_directory_uri() . '/assets/gki/gki-home.js', ['hcaptcha-api'], '36.0.0', true);
+    wp_enqueue_style('gki-home', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', ['wp-theme-child-style'], '55.0.0');
+    wp_enqueue_script('gki-home', get_stylesheet_directory_uri() . '/assets/gki/gki-home.js', [], '55.0.0', true);
 }
 add_action('wp_enqueue_scripts', 'gki_child_enqueue_home_assets', 60);
 function gki_child_enqueue_editor_assets() {
-    wp_enqueue_style('gki-home-editor', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', [], '36.0.0');
+    wp_enqueue_style('gki-home-editor', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', [], '55.0.0');
+    wp_enqueue_style('gki-home-editor-fixes', get_stylesheet_directory_uri() . '/assets/gki/gki-editor.css', ['gki-home-editor'], '55.0.0');
 }
 add_action('enqueue_block_editor_assets', 'gki_child_enqueue_editor_assets', 60);
 
 
-function gki_child_hcaptcha_site_key() {
-    return defined('GKI_HCAPTCHA_SITE_KEY') && GKI_HCAPTCHA_SITE_KEY ? GKI_HCAPTCHA_SITE_KEY : '3ab4ede6-536c-4d0c-b832-775c4e9cb94c';
-}
-function gki_child_hcaptcha_secret_key() {
-    return defined('GKI_HCAPTCHA_SECRET_KEY') && GKI_HCAPTCHA_SECRET_KEY ? GKI_HCAPTCHA_SECRET_KEY : 'ES_3d69dad959cd41929744904cdc8c9954';
-}
-function gki_child_enqueue_hcaptcha() {
-    wp_enqueue_script('hcaptcha-api', 'https://js.hcaptcha.com/1/api.js', [], null, true);
-}
-add_action('wp_enqueue_scripts', 'gki_child_enqueue_hcaptcha', 70);
-
-function gki_child_ensure_wpbb_hcaptcha_settings() {
-    $settings = get_option('wpbb_settings', []);
-    if (!is_array($settings)) { $settings = []; }
-    $changed = false;
-    $desired = [
-        'hcaptcha_enabled' => 1,
-        'hcaptcha_site_key' => gki_child_hcaptcha_site_key(),
-        'hcaptcha_secret_key' => gki_child_hcaptcha_secret_key(),
-        'default_recipient_email' => 'guntis@gkiengineering.co.uk',
-        'default_success_message' => 'Thank you. Your message has been sent.',
-        'default_error_message' => 'Message could not be sent. Please try again or email guntis@gkiengineering.co.uk directly.',
-        'default_validation_text' => 'Please fill in all required fields correctly.',
-        'form_honeypot_enabled' => 1,
-        'form_min_submit_time' => '2',
-        'button_class' => 'btn btn-primary gki-btn gki-btn-primary',
-        'form_class' => 'gki-bbuilder-form'
-    ];
-    foreach ($desired as $key => $value) {
-        if (!isset($settings[$key]) || $settings[$key] === '' || $key === 'hcaptcha_enabled' || $key === 'default_recipient_email' || $key === 'form_honeypot_enabled') {
-            if (($settings[$key] ?? null) !== $value) {
-                $settings[$key] = $value;
-                $changed = true;
-            }
-        }
-    }
-    if ($changed) { update_option('wpbb_settings', $settings, false); }
-}
-add_action('after_switch_theme', 'gki_child_ensure_wpbb_hcaptcha_settings', 5);
-add_action('admin_init', 'gki_child_ensure_wpbb_hcaptcha_settings', 5);
 
 function gki_child_mail_from($email) {
     return is_email('noreply@gkiengineering.co.uk') ? 'noreply@gkiengineering.co.uk' : $email;
@@ -148,7 +109,7 @@ function gki_child_seo_social_meta(){
     $title = 'GKI Engineering Ltd | Commercial Kitchen Maintenance, Welding & Fabrication';
     $desc = 'GKI Engineering Ltd provides commercial kitchen maintenance, facility support, stainless steel welding and bespoke fabrication across the Midlands and London.';
     $url = home_url('/');
-    $img = get_stylesheet_directory_uri() . '/assets/gki/hero-preview-approved-v36.jpg';
+    $img = get_stylesheet_directory_uri() . '/assets/gki/about-kitchen-v34.avif';
     echo '<meta name="description" content="' . esc_attr($desc) . '">' . "\n";
     echo '<meta property="og:type" content="website">' . "\n";
     echo '<meta property="og:title" content="' . esc_attr($title) . '">' . "\n";
@@ -179,29 +140,6 @@ function gki_child_contact_form_handler() {
     }
     if (!empty($_POST['website'])) {
         wp_safe_redirect(add_query_arg('gki_status', 'sent', $redirect . '#contact'));
-        exit;
-    }
-    $hcaptcha_response = isset($_POST['h-captcha-response']) ? sanitize_text_field(wp_unslash($_POST['h-captcha-response'])) : '';
-    if (!$hcaptcha_response) {
-        wp_safe_redirect(add_query_arg('gki_status', 'captcha', $redirect . '#contact'));
-        exit;
-    }
-    $verify = wp_remote_post('https://api.hcaptcha.com/siteverify', [
-        'timeout' => 10,
-        'body' => [
-            'secret' => gki_child_hcaptcha_secret_key(),
-            'response' => $hcaptcha_response,
-            'remoteip' => isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '',
-            'sitekey' => gki_child_hcaptcha_site_key(),
-        ],
-    ]);
-    $captcha_ok = false;
-    if (!is_wp_error($verify)) {
-        $data = json_decode((string) wp_remote_retrieve_body($verify), true);
-        $captcha_ok = !empty($data['success']);
-    }
-    if (!$captcha_ok) {
-        wp_safe_redirect(add_query_arg('gki_status', 'captcha', $redirect . '#contact'));
         exit;
     }
     $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
@@ -242,12 +180,13 @@ function gki_child_contact_form_shortcode() {
         <input type="hidden" name="gki_nonce" value="<?php echo esc_attr(wp_create_nonce('gki_contact_form')); ?>">
         <div class="gki-form-row">
             <label>Name<input type="text" name="name" placeholder="Name" required></label>
-            <label>Phone<input type="text" name="phone" placeholder="Phone"></label>
+            <label>Email<input type="email" name="email" placeholder="Email" required></label>
         </div>
-        <label>Email<input type="email" name="email" placeholder="Email" required></label>
-        <label>Subject<input type="text" name="subject" placeholder="Subject"></label>
+        <div class="gki-form-row">
+            <label>Phone<input type="text" name="phone" placeholder="Phone"></label>
+            <label>Subject<input type="text" name="subject" placeholder="Subject"></label>
+        </div>
         <label class="gki-field-full">Message<textarea name="message" placeholder="Message" rows="6" required></textarea></label>
-        <div class="gki-hcaptcha-wrap"><div class="h-captcha" data-sitekey="<?php echo esc_attr(gki_child_hcaptcha_site_key()); ?>"></div></div>
         <input type="text" name="website" value="" tabindex="-1" autocomplete="off" class="gki-hp" aria-hidden="true">
         <button type="submit" class="gki-btn gki-btn-primary">Send Message</button>
     </form>
@@ -262,20 +201,395 @@ add_shortcode('gki_contact_form', 'gki_child_contact_form_shortcode');
 /* GKI v32 SAFE: final frontend polish without WPBB fatal filters. */
 function gki_child_v32_assets() {
     wp_dequeue_style('gki-home');
-    wp_enqueue_style('gki-home-v32', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', ['wp-theme-child-style'], '36.0.0');
+    wp_enqueue_style('gki-home-v32', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', ['wp-theme-child-style'], '55.0.0');
     wp_dequeue_script('gki-home');
-    wp_enqueue_script('gki-home-v32', get_stylesheet_directory_uri() . '/assets/gki/gki-home.js', [], '36.0.0', true);
+    wp_enqueue_script('gki-home-v32', get_stylesheet_directory_uri() . '/assets/gki/gki-home.js', [], '55.0.0', true);
 }
 add_action('wp_enqueue_scripts', 'gki_child_v32_assets', 100);
 
 function gki_child_v32_refresh_home() {
     if (!current_user_can('manage_options')) { return; }
-    if (get_option('gki_home_v36_safe_refreshed')) { return; }
+    if (get_option('gki_home_v43_final_refreshed')) { return; }
     if (function_exists('gki_child_create_home_page')) {
-        delete_option('gki_home_page_installed_v36_stable_preview_match');
+        delete_option('gki_home_page_installed_v38_visual_fix'); delete_option('gki_home_page_installed_v36_stable_preview_match'); delete_option('gki_home_page_installed_v40_final_all_fixes');
         gki_child_create_home_page();
-        update_option('gki_home_v36_safe_refreshed', time(), false);
+        update_option('gki_home_v43_final_refreshed', time(), false);
     }
 }
 add_action('admin_init','gki_child_v32_refresh_home',5);
 add_action('after_switch_theme','gki_child_v32_refresh_home',5);
+
+/* GKI v43: use WP BBuilder hCaptcha settings when keys exist; no hardcoded site/secret keys. */
+function gki_child_enable_wpbb_hcaptcha_if_configured() {
+    $opts = get_option('wpbb_settings');
+    if (!is_array($opts)) { return; }
+    $site = trim((string)($opts['hcaptcha_site_key'] ?? ''));
+    $secret = trim((string)($opts['hcaptcha_secret_key'] ?? ''));
+    if ($site !== '' && $secret !== '' && empty($opts['hcaptcha_enabled'])) {
+        $opts['hcaptcha_enabled'] = 1;
+        update_option('wpbb_settings', $opts, false);
+    }
+}
+add_action('admin_init', 'gki_child_enable_wpbb_hcaptcha_if_configured', 1);
+add_action('after_switch_theme', 'gki_child_enable_wpbb_hcaptcha_if_configured', 1);
+
+function gki_child_v43_refresh_home() {
+    if (!current_user_can('manage_options')) { return; }
+    if (get_option('gki_home_v43_final_refreshed_done')) { return; }
+    delete_option('gki_home_page_installed_v39_final_all_fixes');
+    delete_option('gki_home_page_installed_v40_final_all_fixes');
+    delete_option('gki_home_page_installed_v43_final_all_fixes');
+    delete_option('gki_home_v40_final_refreshed');
+    if (function_exists('gki_child_create_home_page')) {
+        gki_child_create_home_page();
+        update_option('gki_home_v43_final_refreshed_done', time(), false);
+    }
+}
+add_action('admin_init','gki_child_v43_refresh_home',1);
+add_action('after_switch_theme','gki_child_v43_refresh_home',1);
+
+
+/* GKI v44: force refresh generated Home page and keep WP BBuilder hCaptcha enabled when admin keys are present. */
+function gki_child_v44_refresh_home() {
+    if (!current_user_can('manage_options')) { return; }
+    if (get_option('gki_home_v44_final_refreshed_done')) { return; }
+    delete_option('gki_home_page_installed_v43_final_all_fixes');
+    delete_option('gki_home_page_installed_v44_final_all_fixes');
+    delete_option('gki_home_v43_final_refreshed_done');
+    if (function_exists('gki_child_enable_wpbb_hcaptcha_if_configured')) { gki_child_enable_wpbb_hcaptcha_if_configured(); }
+    if (function_exists('gki_child_create_home_page')) {
+        gki_child_create_home_page();
+        update_option('gki_home_v44_final_refreshed_done', time(), false);
+    }
+}
+add_action('admin_init','gki_child_v44_refresh_home',0);
+add_action('after_switch_theme','gki_child_v44_refresh_home',0);
+
+function gki_child_v44_wpbb_settings_force_hcaptcha($value) {
+    if (!is_array($value)) { return $value; }
+    $site = trim((string)($value['hcaptcha_site_key'] ?? ''));
+    $secret = trim((string)($value['hcaptcha_secret_key'] ?? ''));
+    if ($site !== '' && $secret !== '') { $value['hcaptcha_enabled'] = 1; }
+    return $value;
+}
+add_filter('option_wpbb_settings','gki_child_v44_wpbb_settings_force_hcaptcha', 5);
+
+
+/* GKI v45: final refresh + BBuilder hCaptcha injection from admin settings only. */
+function gki_child_v45_wpbb_setting($key, $default = '') {
+    if (function_exists('wpbb_get_option')) { return wpbb_get_option($key, $default); }
+    $settings = get_option('wpbb_settings', array());
+    if (!is_array($settings)) { $settings = array(); }
+    return array_key_exists($key, $settings) ? $settings[$key] : $default;
+}
+function gki_child_v45_hcaptcha_site_key() {
+    return trim((string) gki_child_v45_wpbb_setting('hcaptcha_site_key', ''));
+}
+function gki_child_v45_hcaptcha_enabled() {
+    return gki_child_v45_hcaptcha_site_key() !== '';
+}
+function gki_child_v45_hcaptcha_markup() {
+    if (!gki_child_v45_hcaptcha_enabled()) { return ''; }
+    $site_key = gki_child_v45_hcaptcha_site_key();
+    return '<div class="gki-hcaptcha-field wpbb-field wpbb-field--captcha col-12"><div class="h-captcha" data-sitekey="' . esc_attr($site_key) . '"></div><input type="hidden" name="wpbb_captcha_enabled" value="1"><input type="hidden" name="wpbb_captcha_provider" value="hcaptcha"></div>';
+}
+function gki_child_v45_inject_hcaptcha_into_wpbb_form($html, $block = null) {
+    if (!is_string($html) || $html === '' || !gki_child_v45_hcaptcha_enabled()) { return $html; }
+    if (stripos($html, 'wpbb-dynamic-form') === false && stripos($html, 'gki-bbuilder-form') === false) { return $html; }
+    if (stripos($html, 'h-captcha') !== false) {
+        if (stripos($html, 'name="wpbb_captcha_provider"') === false) {
+            $html = str_ireplace('</form>', '<input type="hidden" name="wpbb_captcha_enabled" value="1"><input type="hidden" name="wpbb_captcha_provider" value="hcaptcha"></form>', $html);
+        }
+        return $html;
+    }
+    $markup = gki_child_v45_hcaptcha_markup();
+    foreach (array('<div class="wpbb-form-actions', '<button type="submit"', '</form>') as $target) {
+        $pos = stripos($html, $target);
+        if ($pos !== false) { return substr($html, 0, $pos) . $markup . substr($html, $pos); }
+    }
+    return $html;
+}
+function gki_child_v45_render_block_hcaptcha($block_content, $block) {
+    if (is_array($block) && isset($block['blockName']) && $block['blockName'] === 'wpbb/dynamic-form') {
+        return gki_child_v45_inject_hcaptcha_into_wpbb_form($block_content, $block);
+    }
+    return $block_content;
+}
+add_filter('render_block', 'gki_child_v45_render_block_hcaptcha', 20, 2);
+function gki_child_v45_enqueue_hcaptcha_api() {
+    if (gki_child_v45_hcaptcha_enabled() && !is_admin()) {
+        wp_enqueue_script('gki-hcaptcha-api', 'https://js.hcaptcha.com/1/api.js?render=explicit', array(), null, true);
+    }
+}
+add_action('wp_enqueue_scripts', 'gki_child_v45_enqueue_hcaptcha_api', 20);
+function gki_child_v45_force_refresh_home() {
+    if (!current_user_can('manage_options')) { return; }
+    if (get_option('gki_home_v45_final_refreshed_done')) { return; }
+    delete_option('gki_home_page_installed_v44_final_all_fixes');
+    delete_option('gki_home_page_installed_v45_final_all_fixes');
+    delete_option('gki_home_v44_final_refreshed_done');
+    if (function_exists('gki_child_enable_wpbb_hcaptcha_if_configured')) { gki_child_enable_wpbb_hcaptcha_if_configured(); }
+    if (function_exists('gki_child_create_home_page')) {
+        gki_child_create_home_page();
+        update_option('gki_home_v45_final_refreshed_done', time(), false);
+    }
+}
+add_action('admin_init','gki_child_v45_force_refresh_home',0);
+add_action('after_switch_theme','gki_child_v45_force_refresh_home',0);
+
+
+/* GKI v47: force refresh generated Home page for latest hero/icon/project/form/map updates. */
+function gki_child_v47_force_refresh_home() {
+    if (!current_user_can('manage_options')) { return; }
+    if (get_option('gki_home_v47_final_refreshed_done')) { return; }
+    delete_option('gki_home_page_installed_v46_user_final');
+    delete_option('gki_home_page_installed_v47_final_user_updates');
+    delete_option('gki_home_v45_final_refreshed_done');
+    if (function_exists('gki_child_enable_wpbb_hcaptcha_if_configured')) { gki_child_enable_wpbb_hcaptcha_if_configured(); }
+    if (function_exists('gki_child_create_home_page')) {
+        gki_child_create_home_page();
+        update_option('gki_home_v47_final_refreshed_done', time(), false);
+    }
+}
+add_action('admin_init', 'gki_child_v47_force_refresh_home', 0);
+add_action('after_switch_theme', 'gki_child_v47_force_refresh_home', 0);
+
+
+/* GKI v48: force refresh generated Home page for logo/footer/card color fixes. */
+function gki_child_v48_force_refresh_home() {
+    if (!current_user_can('manage_options')) { return; }
+    if (get_option('gki_home_v48_final_refreshed_done')) { return; }
+    delete_option('gki_home_page_installed_v47_final_user_updates');
+    delete_option('gki_home_page_installed_v48_footer_logo_cards');
+    delete_option('gki_home_v47_final_refreshed_done');
+    if (function_exists('gki_child_enable_wpbb_hcaptcha_if_configured')) { gki_child_enable_wpbb_hcaptcha_if_configured(); }
+    if (function_exists('gki_child_create_home_page')) {
+        gki_child_create_home_page();
+        update_option('gki_home_v48_final_refreshed_done', time(), false);
+    }
+}
+add_action('admin_init', 'gki_child_v48_force_refresh_home', 0);
+add_action('after_switch_theme', 'gki_child_v48_force_refresh_home', 0);
+
+
+/* GKI v49: exact services + WP BBuilder hCaptcha compatibility. No keys are hardcoded. */
+function gki_child_v49_hcaptcha_site_key() {
+    $settings = get_option('wpbb_settings', array());
+    if (!is_array($settings)) { $settings = array(); }
+    if (function_exists('wpbb_get_option')) {
+        $key = trim((string) wpbb_get_option('hcaptcha_site_key', ''));
+    } else {
+        $key = trim((string) ($settings['hcaptcha_site_key'] ?? ''));
+    }
+    return $key;
+}
+function gki_child_v49_hcaptcha_markup() {
+    $site_key = gki_child_v49_hcaptcha_site_key();
+    if ($site_key === '') { return ''; }
+    return '<div class="gki-hcaptcha-field wpbb-field wpbb-field--captcha col-12"><div class="h-captcha" data-sitekey="' . esc_attr($site_key) . '"></div><input type="hidden" name="wpbb_captcha_enabled" value="1"><input type="hidden" name="wpbb_captcha_provider" value="hcaptcha"></div>';
+}
+function gki_child_v49_inject_hcaptcha($html, $block = null) {
+    if (!is_string($html) || $html === '' || gki_child_v49_hcaptcha_site_key() === '') { return $html; }
+    if (stripos($html, 'wpbb-dynamic-form') === false && stripos($html, 'gki-bbuilder-form') === false) { return $html; }
+    if (stripos($html, 'h-captcha') !== false) {
+        if (stripos($html, 'name="wpbb_captcha_provider"') === false) {
+            $html = str_ireplace('</form>', '<input type="hidden" name="wpbb_captcha_enabled" value="1"><input type="hidden" name="wpbb_captcha_provider" value="hcaptcha"></form>', $html);
+        }
+        return $html;
+    }
+    $markup = gki_child_v49_hcaptcha_markup();
+    foreach (array('<div class="wpbb-form-actions', '<button type="submit"', '</form>') as $target) {
+        $pos = stripos($html, $target);
+        if ($pos !== false) { return substr($html, 0, $pos) . $markup . substr($html, $pos); }
+    }
+    return $html;
+}
+function gki_child_v49_render_block_hcaptcha($block_content, $block) {
+    if (is_array($block) && isset($block['blockName']) && $block['blockName'] === 'wpbb/dynamic-form') {
+        return gki_child_v49_inject_hcaptcha($block_content, $block);
+    }
+    return $block_content;
+}
+add_filter('render_block', 'gki_child_v49_render_block_hcaptcha', 30, 2);
+function gki_child_v49_hcaptcha_script() {
+    if (gki_child_v49_hcaptcha_site_key() !== '' && !is_admin()) {
+        wp_enqueue_script('gki-hcaptcha-api-v49', 'https://js.hcaptcha.com/1/api.js', array(), null, true);
+    }
+}
+add_action('wp_enqueue_scripts', 'gki_child_v49_hcaptcha_script', 25);
+function gki_child_v49_force_refresh_home() {
+    if (!current_user_can('manage_options')) { return; }
+    if (get_option('gki_home_v49_final_refreshed_done')) { return; }
+    delete_option('gki_home_page_installed_v48_footer_logo_cards');
+    delete_option('gki_home_page_installed_v49_services_hcaptcha_year');
+    delete_option('gki_home_v48_final_refreshed_done');
+    if (function_exists('gki_child_enable_wpbb_hcaptcha_if_configured')) { gki_child_enable_wpbb_hcaptcha_if_configured(); }
+    if (function_exists('gki_child_create_home_page')) {
+        gki_child_create_home_page();
+        update_option('gki_home_v49_final_refreshed_done', time(), false);
+    }
+}
+add_action('admin_init', 'gki_child_v49_force_refresh_home', 0);
+add_action('after_switch_theme', 'gki_child_v49_force_refresh_home', 0);
+
+
+/* GKI v50: remove legacy auto-refreshers so the Home page remains editable after this update. */
+function gki_child_v50_remove_legacy_hooks() {
+    remove_action('admin_init', 'gki_child_v32_refresh_home', 5);
+    remove_action('admin_init', 'gki_child_v43_refresh_home', 1);
+    remove_action('admin_init', 'gki_child_v44_refresh_home', 0);
+    remove_action('admin_init', 'gki_child_v45_force_refresh_home', 0);
+    remove_action('admin_init', 'gki_child_v47_force_refresh_home', 0);
+    remove_action('admin_init', 'gki_child_v48_force_refresh_home', 0);
+    remove_action('admin_init', 'gki_child_v49_force_refresh_home', 0);
+    remove_action('admin_init', 'gki_child_create_home_page');
+    remove_filter('render_block', 'gki_child_v45_render_block_hcaptcha', 20);
+    remove_filter('render_block', 'gki_child_v49_render_block_hcaptcha', 30);
+    remove_action('wp_enqueue_scripts', 'gki_child_v45_enqueue_hcaptcha_api', 20);
+    remove_action('wp_enqueue_scripts', 'gki_child_v49_hcaptcha_script', 25);
+}
+add_action('init', 'gki_child_v50_remove_legacy_hooks', 0);
+
+function gki_child_v50_wpbb_hcaptcha_language($requested = '') {
+    $lang = sanitize_key($requested);
+    if ($lang === '' || $lang === 'auto') {
+        $locale = function_exists('determine_locale') ? determine_locale() : get_locale();
+        $lang = strpos((string) $locale, 'lv') === 0 ? 'lv' : 'en';
+    }
+    return in_array($lang, array('lv', 'en'), true) ? $lang : 'en';
+}
+
+function gki_child_v50_wpbb_setting($key, $default = '') {
+    if (function_exists('wpbb_get_option')) { return wpbb_get_option($key, $default); }
+    $settings = get_option('wpbb_settings', array());
+    if (!is_array($settings)) { $settings = array(); }
+    return array_key_exists($key, $settings) ? $settings[$key] : $default;
+}
+
+function gki_child_v50_wpbb_captcha_config($requested_provider = '') {
+    $config = array('provider' => '', 'site_key' => '', 'language' => gki_child_v50_wpbb_hcaptcha_language());
+    $h_enabled = (bool) gki_child_v50_wpbb_setting('hcaptcha_enabled', 0);
+    $h_site = $h_enabled ? trim((string) gki_child_v50_wpbb_setting('hcaptcha_site_key', '')) : '';
+    $h_secret = $h_enabled ? trim((string) gki_child_v50_wpbb_setting('hcaptcha_secret_key', '')) : '';
+    if ($h_site !== '') {
+        $config['provider'] = 'hcaptcha';
+        $config['site_key'] = $h_site;
+        $config['secret_available'] = $h_secret !== '';
+        return $config;
+    }
+    return $config;
+}
+
+function gki_child_v50_enqueue_wpbb_form_assets($captcha_config = array()) {
+    if (wp_script_is('wpbb-form-view', 'registered')) { wp_enqueue_script('wpbb-form-view'); }
+    $bridge_path = get_stylesheet_directory() . '/assets/gki/wpbb-form-bridge.js';
+    if (file_exists($bridge_path)) {
+        wp_enqueue_script('gki-wpbb-form-bridge', get_stylesheet_directory_uri() . '/assets/gki/wpbb-form-bridge.js', array(), filemtime($bridge_path), true);
+        wp_localize_script('gki-wpbb-form-bridge', 'gkiWpbbFormBridge', array(
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('wpbb_form_nonce'),
+            'error' => function_exists('wpbb_get_option') ? wpbb_get_option('default_error_message', 'Something went wrong. Please try again.') : 'Something went wrong. Please try again.',
+            'validationText' => function_exists('wpbb_get_option') ? wpbb_get_option('default_validation_text', 'Please fill in all required fields.') : 'Please fill in all required fields.',
+        ));
+    }
+    if (!empty($captcha_config['provider']) && $captcha_config['provider'] === 'hcaptcha' && !empty($captcha_config['site_key'])) {
+        $lang = !empty($captcha_config['language']) ? $captcha_config['language'] : gki_child_v50_wpbb_hcaptcha_language();
+        wp_enqueue_script('hcaptcha-api', 'https://js.hcaptcha.com/1/api.js?render=explicit&hl=' . rawurlencode($lang), array(), null, true);
+    }
+}
+
+function gki_child_v50_hcaptcha_script_language($src, $handle) {
+    if (!in_array($handle, array('hcaptcha-api', 'hcaptcha'), true) || strpos((string) $src, 'hcaptcha.com/1/api.js') === false) { return $src; }
+    if (strpos((string) $src, 'hl=') !== false) { return $src; }
+    return add_query_arg('hl', gki_child_v50_wpbb_hcaptcha_language(), $src);
+}
+add_filter('script_loader_src', 'gki_child_v50_hcaptcha_script_language', 20, 2);
+
+function gki_child_v50_wpbb_dynamic_form_hcaptcha($block_content, $block) {
+    if (empty($block['blockName']) || $block['blockName'] !== 'wpbb/dynamic-form') { return $block_content; }
+    $captcha = gki_child_v50_wpbb_captcha_config('hcaptcha');
+    if (empty($captcha['provider']) || $captcha['provider'] !== 'hcaptcha' || empty($captcha['site_key'])) { return $block_content; }
+    gki_child_v50_enqueue_wpbb_form_assets($captcha);
+    $lang = !empty($captcha['language']) ? $captcha['language'] : gki_child_v50_wpbb_hcaptcha_language();
+    if (strpos($block_content, 'h-captcha') !== false) {
+        if (strpos($block_content, 'data-hl=') === false) {
+            $block_content = preg_replace('/(<div\s+[^>]*class=["\'][^"\']*h-captcha[^"\']*["\'][^>]*)(>)/i', '$1 data-hl="' . esc_attr($lang) . '"$2', $block_content);
+        }
+        return $block_content;
+    }
+    $captcha_html = '<div class="col-12 gki-hcaptcha-col"><div class="wpbb-field wpbb-field--captcha gki-hcaptcha-wrap"><div class="h-captcha gki-hcaptcha" data-sitekey="' . esc_attr($captcha['site_key']) . '" data-hl="' . esc_attr($lang) . '"></div><input type="hidden" name="wpbb_captcha_enabled" value="1"><input type="hidden" name="wpbb_captcha_provider" value="hcaptcha"></div></div>';
+    if (strpos($block_content, 'wpbb-form-message') !== false) {
+        return preg_replace('/(<div[^>]*class=["\'][^"\']*wpbb-form-message[^"\']*["\'][^>]*>)/i', $captcha_html . '$1', $block_content, 1);
+    }
+    if (strpos($block_content, 'wpbb-form-actions') !== false) {
+        return preg_replace('/(<div[^>]*class=["\'][^"\']*wpbb-form-actions[^"\']*["\'][^>]*>)/i', $captcha_html . '$1', $block_content, 1);
+    }
+    return str_replace('</form>', $captcha_html . '</form>', $block_content);
+}
+add_filter('render_block', 'gki_child_v50_wpbb_dynamic_form_hcaptcha', 40, 2);
+
+/* Run the v50 home refresh once, then leave the page editable in Pages > Home. */
+function gki_child_v50_force_refresh_home() {
+    if (!current_user_can('manage_options')) { return; }
+    if (get_option('gki_home_v50_final_refreshed_done')) { return; }
+    delete_option('gki_home_page_installed_v49_services_hcaptcha_year');
+    delete_option('gki_home_page_installed_v50_editor_hcaptcha_icons');
+    if (function_exists('gki_child_enable_wpbb_hcaptcha_if_configured')) { gki_child_enable_wpbb_hcaptcha_if_configured(); }
+    if (function_exists('gki_child_create_home_page')) {
+        gki_child_create_home_page();
+        update_option('gki_home_v50_final_refreshed_done', time(), false);
+    }
+}
+add_action('admin_init', 'gki_child_v50_force_refresh_home', 0);
+add_action('after_switch_theme', 'gki_child_v50_force_refresh_home', 0);
+
+
+/* GKI v52: restore v50-approved frontend proportions while keeping editor-safe blocks and WP BBuilder hCaptcha. */
+function gki_child_v52_remove_legacy_refresh_hooks() {
+    remove_action('admin_init', 'gki_child_v32_refresh_home', 5);
+    remove_action('admin_init', 'gki_child_v43_refresh_home', 1);
+    remove_action('admin_init', 'gki_child_v44_refresh_home', 0);
+    remove_action('admin_init', 'gki_child_v45_force_refresh_home', 0);
+    remove_action('admin_init', 'gki_child_v47_force_refresh_home', 0);
+    remove_action('admin_init', 'gki_child_v48_force_refresh_home', 0);
+    remove_action('admin_init', 'gki_child_v49_force_refresh_home', 0);
+    remove_action('admin_init', 'gki_child_v50_force_refresh_home', 0);
+}
+add_action('init', 'gki_child_v52_remove_legacy_refresh_hooks', 1);
+
+function gki_child_v52_force_refresh_home() {
+    if (!current_user_can('manage_options')) { return; }
+    if (get_option('gki_home_v52_restored_design_done')) { return; }
+    delete_option('gki_home_page_installed_v50_editor_hcaptcha_icons');
+    delete_option('gki_home_page_installed_v52_restored_design');
+    delete_option('gki_home_v50_final_refreshed_done');
+    if (function_exists('gki_child_enable_wpbb_hcaptcha_if_configured')) { gki_child_enable_wpbb_hcaptcha_if_configured(); }
+    if (function_exists('gki_child_create_home_page')) {
+        gki_child_create_home_page();
+        update_option('gki_home_v52_restored_design_done', time(), false);
+    }
+}
+add_action('admin_init', 'gki_child_v52_force_refresh_home', 0);
+add_action('after_switch_theme', 'gki_child_v52_force_refresh_home', 0);
+
+
+/* GKI v53: refresh Home once with editor-valid Why blocks, coverage location chips, and updated editor styling. */
+function gki_child_v53_remove_legacy_refresh_hooks() {
+    remove_action('admin_init', 'gki_child_v52_force_refresh_home', 0);
+}
+add_action('init', 'gki_child_v53_remove_legacy_refresh_hooks', 2);
+
+function gki_child_v53_force_refresh_home() {
+    if (!current_user_can('manage_options')) { return; }
+    if (get_option('gki_home_v53_editor_polish_done')) { return; }
+    delete_option('gki_home_page_installed_v52_restored_design');
+    delete_option('gki_home_page_installed_v53_editor_polish');
+    delete_option('gki_home_v52_restored_design_done');
+    if (function_exists('gki_child_enable_wpbb_hcaptcha_if_configured')) { gki_child_enable_wpbb_hcaptcha_if_configured(); }
+    if (function_exists('gki_child_create_home_page')) {
+        gki_child_create_home_page();
+        update_option('gki_home_v53_editor_polish_done', time(), false);
+    }
+}
+add_action('admin_init', 'gki_child_v53_force_refresh_home', 0);
+add_action('after_switch_theme', 'gki_child_v53_force_refresh_home', 0);

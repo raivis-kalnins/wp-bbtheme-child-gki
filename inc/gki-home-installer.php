@@ -54,18 +54,30 @@ function gki_child_img_block($asset, $alt, $class = '') {
     return '<!-- wp:image ' . wp_json_encode($json) . ' --><figure class="wp-block-image size-full' . $figClass . '"><img src="' . $url . '" alt="' . $alt . '"' . $imgClass . '/></figure><!-- /wp:image -->';
 }
 
+
+function gki_child_why_icon($name) {
+    $icons = array(
+        'professionals' => '<svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3.5"/><path d="M4 21c1.4-4.7 4-7 8-7s6.6 2.3 8 7"/></svg>',
+        'reliable' => '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-5"/></svg>',
+        'detail' => '<svg viewBox="0 0 24 24"><path d="M8 4h8l2 3v13H6V7z"/><path d="M9 12l2 2 4-5"/><path d="M9 18h6"/></svg>',
+        'partners' => '<svg viewBox="0 0 24 24"><path d="M8 12l3 3 5-6"/><path d="M3.5 13.5l3-3a3 3 0 0 1 4.2 0l.8.8.8-.8a3 3 0 0 1 4.2 0l4 4"/></svg>',
+    );
+    $svg = isset($icons[$name]) ? $icons[$name] : $icons['professionals'];
+    return '<span class="gki-why-icon" aria-hidden="true">' . $svg . '</span>';
+}
+
 function gki_child_build_home_content() {
-    $plumbing = gki_child_media_for_asset('icon-plumbing-logo-v36.png', 'Plumbing icon');
-    $mechanical = gki_child_media_for_asset('icon-mechanical-clean-v36.svg', 'Mechanical icon');
-    $facility = gki_child_media_for_asset('icon-facilities-logo-v36.png', 'Facility icon');
-    $welding = gki_child_media_for_asset('icon-welding-logo-v36.png', 'Welding icon');
-    $fabrication = gki_child_media_for_asset('icon-fabrication-logo-v36.png', 'Fabrication icon');
-    $hero = gki_child_media_for_asset('hero-preview-approved-v36.jpg', 'GKI Engineering maintenance specialist');
-    if (empty($hero['url'])) { $hero = gki_child_media_for_asset('hero-preview-approved-v36.jpg', 'GKI Engineering maintenance specialist'); }
-    $about = gki_child_media_for_asset('about-kitchen-v34.jpg', 'Commercial kitchen stainless steel maintenance');
-    $restaurant = gki_child_media_for_asset('project-restaurant-preview-v36.jpg', 'Restaurant maintenance project');
-    $facilityImg = gki_child_media_for_asset('project-commercial-preview-v36.jpg', 'Commercial facility project');
-    $weldingImg = gki_child_media_for_asset('project-welding-preview-v36.jpg', 'Stainless steel welding project');
+    $plumbing = gki_child_media_for_asset('icon-plumbing-v52.svg', 'Plumbing icon');
+    $mechanical = gki_child_media_for_asset('icon-mechanical-v52.svg', 'Mechanical icon');
+    $facility = gki_child_media_for_asset('icon-facilities-v52.svg', 'Facility icon');
+    $welding = gki_child_media_for_asset('icon-welding-v52.svg', 'Welding icon');
+    $fabrication = gki_child_media_for_asset('icon-fabrication-v52.svg', 'Fabrication icon');
+    $hero = gki_child_media_for_asset('hero-kitchen-v52.avif', 'Commercial kitchen hero image');
+    if (empty($hero['url'])) { $hero = gki_child_media_for_asset('hero-kitchen-v52.avif', 'Commercial kitchen hero image'); }
+    $about = gki_child_media_for_asset('about-kitchen-v52.avif', 'Commercial kitchen stainless steel maintenance');
+    $restaurant = gki_child_media_for_asset('project-restaurant-v52.avif', 'Restaurant maintenance project');
+    $facilityImg = gki_child_media_for_asset('project-commercial-v52.avif', 'Commercial facility project');
+    $weldingImg = gki_child_media_for_asset('project-welding-v52.avif', 'Stainless steel welding project');
     ob_start(); ?>
 <!-- wp:group {"className":"gki-home-page","layout":{"type":"default"}} -->
 <div class="wp-block-group gki-home-page" id="gki-site">
@@ -78,7 +90,7 @@ function gki_child_build_home_content() {
 <!-- wp:paragraph {"className":"gki-hero-lead"} --><p class="gki-hero-lead">Commercial kitchen maintenance, commercial facility support, stainless steel welding and bespoke stainless steel fabrication for restaurants, kitchens and commercial buildings.</p><!-- /wp:paragraph -->
 <!-- wp:buttons {"className":"gki-actions"} --><div class="wp-block-buttons gki-actions"><!-- wp:button {"className":"gki-btn-primary"} --><div class="wp-block-button gki-btn-primary"><a class="wp-block-button__link wp-element-button" href="#services">Our Services</a></div><!-- /wp:button --><!-- wp:button {"className":"is-style-outline gki-btn-secondary"} --><div class="wp-block-button is-style-outline gki-btn-secondary"><a class="wp-block-button__link wp-element-button" href="#about">Learn More</a></div><!-- /wp:button --></div><!-- /wp:buttons -->
 </div><!-- /wp:column --><!-- wp:column {"width":"56%","className":"gki-hero-media"} -->
-<div class="wp-block-column gki-hero-media" style="flex-basis:56%"><?php echo gki_child_img_block($hero, 'GKI Engineering maintenance specialist working on site', 'hero-card'); ?></div><!-- /wp:column --></div><!-- /wp:columns --></section><!-- /wp:group -->
+<div class="wp-block-column gki-hero-media" style="flex-basis:56%"><?php echo gki_child_img_block($hero, 'Commercial kitchen hero image working on site', 'hero-card'); ?></div><!-- /wp:column --></div><!-- /wp:columns --></section><!-- /wp:group -->
 
 <!-- wp:group {"tagName":"section","className":"gki-section","anchor":"about","layout":{"type":"default"}} -->
 <section class="wp-block-group gki-section" id="about"><!-- wp:columns {"className":"gki-container gki-about-grid align-items-center"} -->
@@ -108,10 +120,10 @@ function gki_child_build_home_content() {
 <!-- wp:group {"tagName":"section","className":"gki-section gki-dark-section","layout":{"type":"default"}} -->
 <section class="wp-block-group gki-section gki-dark-section"><!-- wp:group {"className":"gki-container","layout":{"type":"default"}} --><div class="wp-block-group gki-container"><!-- wp:heading --><h2 class="wp-block-heading">Why Choose GKI</h2><!-- /wp:heading -->
 <!-- wp:columns {"className":"gki-why"} --><div class="wp-block-columns gki-why">
-<!-- wp:column {"className":"gki-why-item"} --><div class="wp-block-column gki-why-item"><span class="gki-why-icon">✓</span><!-- wp:paragraph --><p><strong>Professionals</strong><br><span>Skilled and experienced engineers.</span></p><!-- /wp:paragraph --></div><!-- /wp:column -->
-<!-- wp:column {"className":"gki-why-item"} --><div class="wp-block-column gki-why-item"><span class="gki-why-icon">★</span><!-- wp:paragraph --><p><strong>Reliable Solutions</strong><br><span>Delivering dependable results every time.</span></p><!-- /wp:paragraph --></div><!-- /wp:column -->
-<!-- wp:column {"className":"gki-why-item"} --><div class="wp-block-column gki-why-item"><span class="gki-why-icon">i</span><!-- wp:paragraph --><p><strong>Detail Driven</strong><br><span>Precision and attention in every project.</span></p><!-- /wp:paragraph --></div><!-- /wp:column -->
-<!-- wp:column {"className":"gki-why-item"} --><div class="wp-block-column gki-why-item"><span class="gki-why-icon">↗</span><!-- wp:paragraph --><p><strong>Long-Term Partners</strong><br><span>Building lasting relationships with our clients.</span></p><!-- /wp:paragraph --></div><!-- /wp:column -->
+<!-- wp:column {"className":"gki-why-item"} --><div class="wp-block-column gki-why-item"><!-- wp:html --><?php echo gki_child_why_icon('professionals'); ?><!-- /wp:html --><!-- wp:paragraph --><p><strong>Professionals</strong><br><span>Skilled and experienced engineers.</span></p><!-- /wp:paragraph --></div><!-- /wp:column -->
+<!-- wp:column {"className":"gki-why-item"} --><div class="wp-block-column gki-why-item"><!-- wp:html --><?php echo gki_child_why_icon('reliable'); ?><!-- /wp:html --><!-- wp:paragraph --><p><strong>Reliable Solutions</strong><br><span>Delivering dependable results every time.</span></p><!-- /wp:paragraph --></div><!-- /wp:column -->
+<!-- wp:column {"className":"gki-why-item"} --><div class="wp-block-column gki-why-item"><!-- wp:html --><?php echo gki_child_why_icon('detail'); ?><!-- /wp:html --><!-- wp:paragraph --><p><strong>Detail Driven</strong><br><span>Precision and attention in every project.</span></p><!-- /wp:paragraph --></div><!-- /wp:column -->
+<!-- wp:column {"className":"gki-why-item"} --><div class="wp-block-column gki-why-item"><!-- wp:html --><?php echo gki_child_why_icon('partners'); ?><!-- /wp:html --><!-- wp:paragraph --><p><strong>Long-Term Partners</strong><br><span>Building lasting relationships with our clients.</span></p><!-- /wp:paragraph --></div><!-- /wp:column -->
 </div><!-- /wp:columns -->
 <!-- wp:columns {"className":"gki-info-row"} --><div class="wp-block-columns gki-info-row">
 <!-- wp:column {"width":"50%","className":"gki-info-card gki-testimonials"} --><div class="wp-block-column gki-info-card gki-testimonials" style="flex-basis:50%"><!-- wp:heading --><h2 class="wp-block-heading">Testimonials</h2><!-- /wp:heading --><!-- wp:group {"className":"gki-swiper","layout":{"type":"default"}} --><div class="wp-block-group gki-swiper"><!-- wp:group {"className":"gki-slides","layout":{"type":"default"}} --><div class="wp-block-group gki-slides">
@@ -123,10 +135,11 @@ function gki_child_build_home_content() {
 </div><!-- /wp:columns --></div><!-- /wp:group --></section><!-- /wp:group -->
 
 <!-- wp:group {"tagName":"section","className":"gki-section","anchor":"contact","layout":{"type":"default"}} -->
-<section class="wp-block-group gki-section" id="contact"><!-- wp:group {"className":"gki-container","layout":{"type":"default"}} --><div class="wp-block-group gki-container"><!-- wp:heading --><h2 class="wp-block-heading">Contact Us</h2><!-- /wp:heading --><!-- wp:columns {"className":"gki-contact-grid"} --><div class="wp-block-columns gki-contact-grid"><!-- wp:column {"className":"gki-form-card"} --><div class="wp-block-column gki-form-card"><!-- wp:shortcode -->[gki_contact_form]<!-- /wp:shortcode --></div><!-- /wp:column --><!-- wp:column {"className":"gki-contact-card"} --><div class="wp-block-column gki-contact-card"><!-- wp:html --><div class="gki-map"><iframe src="https://www.google.com/maps?q=116+Yardley+Road,+Acocks+Green,+Birmingham,+B27+6LG&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="GKI Engineering Ltd Google Map"></iframe></div><!-- /wp:html --><!-- wp:group {"className":"gki-contact-details","layout":{"type":"default"}} --><div class="wp-block-group gki-contact-details"><!-- wp:paragraph --><p><strong>GKI Engineering Ltd</strong></p><!-- /wp:paragraph --><!-- wp:paragraph --><p>116 Yardley Road<br>Acocks Green<br>Birmingham, England<br>B27 6LG<br>Phone: <a href="tel:+447760660983">+44 (0) 7760660983</a></p><!-- /wp:paragraph --><!-- wp:paragraph --><p><a href="https://find-and-update.company-information.service.gov.uk/company/14112841" target="_blank" rel="noopener noreferrer">Registered in England &amp; Wales · Company No. 14112841</a></p><!-- /wp:paragraph --></div><!-- /wp:group --></div><!-- /wp:column --></div><!-- /wp:columns --></div><!-- /wp:group --></section><!-- /wp:group -->
+<section class="wp-block-group gki-section" id="contact"><!-- wp:group {"className":"gki-container","layout":{"type":"default"}} --><div class="wp-block-group gki-container"><!-- wp:heading --><h2 class="wp-block-heading">Contact Us</h2><!-- /wp:heading --><!-- wp:columns {"className":"gki-contact-grid"} --><div class="wp-block-columns gki-contact-grid"><!-- wp:column {"className":"gki-form-card"} --><div class="wp-block-column gki-form-card"><!-- wp:wpbb/dynamic-form {"formTitle":"Contact Us","recipient":"guntis@gkiengineering.co.uk","emailSubject":"New GKI Engineering website enquiry","successMessage":"Thank you. Your message has been sent.","submitText":"Send Message","showTitle":false,"formClass":"gki-bbuilder-form","buttonClass":"btn btn-primary gki-btn gki-btn-primary","stylePreset":"default","labelPosition":"top","gap":3,"fieldsJson":"[{\"type\":\"text\",\"name\":\"name\",\"label\":\"Name\",\"required\":true,\"width\":6,\"placeholder\":\"Name\",\"step\":1},{\"type\":\"phone\",\"name\":\"phone\",\"label\":\"Phone\",\"required\":false,\"width\":6,\"placeholder\":\"Phone\",\"step\":1},{\"type\":\"email\",\"name\":\"email\",\"label\":\"Email\",\"required\":true,\"width\":12,\"placeholder\":\"Email\",\"step\":1},{\"type\":\"textarea\",\"name\":\"message\",\"label\":\"Message\",\"required\":true,\"width\":12,\"placeholder\":\"Message\",\"step\":1}]"} /--></div><!-- /wp:column --><!-- wp:column {"className":"gki-contact-card"} --><div class="wp-block-column gki-contact-card"><!-- wp:html --><div class="gki-map"><iframe src="https://www.google.com/maps?q=116+Yardley+Road,+Acocks+Green,+Birmingham,+B27+6LG&output=embed" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="GKI Engineering Ltd Google Map"></iframe></div><!-- /wp:html --><!-- wp:group {"className":"gki-contact-details","layout":{"type":"default"}} --><div class="wp-block-group gki-contact-details"><!-- wp:paragraph --><p><strong>GKI Engineering Ltd</strong></p><!-- /wp:paragraph --><!-- wp:paragraph --><p>116 Yardley Road<br>Acocks Green<br>Birmingham, England<br>B27 6LG</p><!-- /wp:paragraph --><!-- wp:paragraph --><p><a href="https://find-and-update.company-information.service.gov.uk/company/14112841" target="_blank" rel="noopener noreferrer">Registered in England &amp; Wales · Company No. 14112841</a></p><!-- /wp:paragraph --></div><!-- /wp:group --></div><!-- /wp:column --></div><!-- /wp:columns --></div><!-- /wp:group --></section><!-- /wp:group -->
 
 </div>
 <!-- /wp:group -->
+<!-- wp:html --><script id="gki-current-year-template-v50">document.querySelectorAll(".gki-current-year").forEach(function(el){el.textContent=(new Date()).getFullYear();});</script><!-- /wp:html -->
 <?php
     return trim(ob_get_clean());
 }
@@ -148,9 +161,9 @@ function gki_child_find_home_page() {
 
 function gki_child_create_home_page() {
     if (!current_user_can('manage_options')) { return; }
-    $version_key = 'gki_home_page_installed_v36_stable_preview_match';
+    $version_key = 'gki_home_page_installed_v53_editor_polish';
     if (get_option($version_key)) { return; }
-    // v36 refreshes generated Home page to replace old hero/images/icons/form fields.
+    // v53 refreshes generated Home page with editor-valid Why icon blocks, 700 H1, location coverage chips, safer editor styling, and WP BBuilder hCaptcha support.
     $content = gki_child_build_home_content();
     $existing = gki_child_find_home_page();
     if ($existing) {
