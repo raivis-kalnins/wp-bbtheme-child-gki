@@ -84,15 +84,70 @@ add_action('wp_head', 'wp_theme_child_seo_meta', 5);
 
 
 function gki_child_enqueue_home_assets() {
-    wp_enqueue_style('gki-home', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', ['wp-theme-child-style'], '55.0.0');
-    wp_enqueue_script('gki-home', get_stylesheet_directory_uri() . '/assets/gki/gki-home.js', [], '55.0.0', true);
+    wp_enqueue_style('gki-home', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', ['wp-theme-child-style'], '56.1.0');
+    wp_enqueue_script('gki-home', get_stylesheet_directory_uri() . '/assets/gki/gki-home.js', [], '56.1.0', true);
 }
 add_action('wp_enqueue_scripts', 'gki_child_enqueue_home_assets', 60);
 function gki_child_enqueue_editor_assets() {
-    wp_enqueue_style('gki-home-editor', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', [], '55.0.0');
-    wp_enqueue_style('gki-home-editor-fixes', get_stylesheet_directory_uri() . '/assets/gki/gki-editor.css', ['gki-home-editor'], '55.0.0');
+    wp_enqueue_style('gki-home-editor', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', [], '56.1.0');
+    wp_enqueue_style('gki-home-editor-fixes', get_stylesheet_directory_uri() . '/assets/gki/gki-editor.css', ['gki-home-editor'], '56.1.0');
 }
 add_action('enqueue_block_editor_assets', 'gki_child_enqueue_editor_assets', 60);
+
+
+function gki_child_testimonial_form_block() {
+    if (!class_exists('WP_Block_Type_Registry') || !WP_Block_Type_Registry::get_instance()->is_registered('wpbb/dynamic-form')) {
+        return '';
+    }
+    $fields = [
+        ['type' => 'text', 'name' => 'name', 'label' => 'Name', 'required' => true, 'width' => 12, 'placeholder' => 'Your name', 'options' => '', 'accept' => '', 'conditionalField' => '', 'conditionalValue' => '', 'step' => 1],
+        ['type' => 'email', 'name' => 'email', 'label' => 'Email', 'required' => true, 'width' => 12, 'placeholder' => 'you@example.com', 'options' => '', 'accept' => '', 'conditionalField' => '', 'conditionalValue' => '', 'step' => 1],
+        ['type' => 'text', 'name' => 'company_role', 'label' => 'Company or role', 'required' => false, 'width' => 12, 'placeholder' => 'Company name or job role', 'options' => '', 'accept' => '', 'conditionalField' => '', 'conditionalValue' => '', 'step' => 1],
+        ['type' => 'textarea', 'name' => 'testimonial', 'label' => 'Testimonial', 'required' => true, 'width' => 12, 'placeholder' => 'Tell us about your experience with GKI Engineering', 'options' => '', 'accept' => '', 'conditionalField' => '', 'conditionalValue' => '', 'step' => 1],
+    ];
+    $block = [
+        'blockName' => 'wpbb/dynamic-form',
+        'attrs' => [
+            'recipient' => 'guntis@gkiengineering.co.uk',
+            'emailSubject' => 'New GKI Engineering testimonial submission',
+            'successMessage' => 'Thank you. Your testimonial has been sent for review.',
+            'submitText' => 'Send Testimonial',
+            'showTitle' => false,
+            'formClass' => 'wpbb-form gki-bbuilder-form gki-testimonial-form',
+            'buttonClass' => 'gki-testimonial-submit',
+            'stylePreset' => 'default',
+            'labelPosition' => 'top',
+            'gap' => 1,
+            'entryType' => 'testimonial',
+            'fieldsJson' => wp_json_encode($fields),
+        ],
+        'innerBlocks' => [],
+        'innerHTML' => '',
+        'innerContent' => [],
+    ];
+    return render_block($block);
+}
+
+function gki_child_render_testimonial_modal() {
+    if (!is_front_page()) return;
+    $form = gki_child_testimonial_form_block();
+    if ($form === '') return;
+    ?>
+    <div class="gki-testimonial-modal" id="gki-testimonial-modal" aria-hidden="true">
+        <button class="gki-testimonial-modal__backdrop" type="button" data-gki-testimonial-close aria-label="Close testimonial form"></button>
+        <div class="gki-testimonial-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="gki-testimonial-modal-title" tabindex="-1">
+            <button class="gki-testimonial-modal__close" type="button" data-gki-testimonial-close aria-label="Close testimonial form">&times;</button>
+            <div class="gki-testimonial-modal__header">
+                <span class="gki-eyebrow">Share your experience</span>
+                <h2 id="gki-testimonial-modal-title">Add Testimonial</h2>
+                <p>Your testimonial will be sent privately to the site administrator for review before it is used on the website.</p>
+            </div>
+            <div class="gki-testimonial-modal__form"><?php echo $form; ?></div>
+        </div>
+    </div>
+    <?php
+}
+add_action('wp_footer', 'gki_child_render_testimonial_modal', 12);
 
 
 
@@ -201,9 +256,9 @@ add_shortcode('gki_contact_form', 'gki_child_contact_form_shortcode');
 /* GKI v32 SAFE: final frontend polish without WPBB fatal filters. */
 function gki_child_v32_assets() {
     wp_dequeue_style('gki-home');
-    wp_enqueue_style('gki-home-v32', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', ['wp-theme-child-style'], '55.0.0');
+    wp_enqueue_style('gki-home-v32', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', ['wp-theme-child-style'], '56.1.0');
     wp_dequeue_script('gki-home');
-    wp_enqueue_script('gki-home-v32', get_stylesheet_directory_uri() . '/assets/gki/gki-home.js', [], '55.0.0', true);
+    wp_enqueue_script('gki-home-v32', get_stylesheet_directory_uri() . '/assets/gki/gki-home.js', [], '56.1.0', true);
 }
 add_action('wp_enqueue_scripts', 'gki_child_v32_assets', 100);
 
