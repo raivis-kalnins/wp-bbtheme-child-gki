@@ -84,13 +84,13 @@ add_action('wp_head', 'wp_theme_child_seo_meta', 5);
 
 
 function gki_child_enqueue_home_assets() {
-    wp_enqueue_style('gki-home', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', ['wp-theme-child-style'], '56.1.0');
-    wp_enqueue_script('gki-home', get_stylesheet_directory_uri() . '/assets/gki/gki-home.js', [], '56.1.0', true);
+    wp_enqueue_style('gki-home', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', ['wp-theme-child-style'], '56.1.2');
+    wp_enqueue_script('gki-home', get_stylesheet_directory_uri() . '/assets/gki/gki-home.js', [], '56.1.2', true);
 }
 add_action('wp_enqueue_scripts', 'gki_child_enqueue_home_assets', 60);
 function gki_child_enqueue_editor_assets() {
-    wp_enqueue_style('gki-home-editor', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', [], '56.1.0');
-    wp_enqueue_style('gki-home-editor-fixes', get_stylesheet_directory_uri() . '/assets/gki/gki-editor.css', ['gki-home-editor'], '56.1.0');
+    wp_enqueue_style('gki-home-editor', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', [], '56.1.2');
+    wp_enqueue_style('gki-home-editor-fixes', get_stylesheet_directory_uri() . '/assets/gki/gki-editor.css', ['gki-home-editor'], '56.1.2');
 }
 add_action('enqueue_block_editor_assets', 'gki_child_enqueue_editor_assets', 60);
 
@@ -256,9 +256,9 @@ add_shortcode('gki_contact_form', 'gki_child_contact_form_shortcode');
 /* GKI v32 SAFE: final frontend polish without WPBB fatal filters. */
 function gki_child_v32_assets() {
     wp_dequeue_style('gki-home');
-    wp_enqueue_style('gki-home-v32', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', ['wp-theme-child-style'], '56.1.0');
+    wp_enqueue_style('gki-home-v32', get_stylesheet_directory_uri() . '/assets/gki/gki-home.css', ['wp-theme-child-style'], '56.1.2');
     wp_dequeue_script('gki-home');
-    wp_enqueue_script('gki-home-v32', get_stylesheet_directory_uri() . '/assets/gki/gki-home.js', [], '56.1.0', true);
+    wp_enqueue_script('gki-home-v32', get_stylesheet_directory_uri() . '/assets/gki/gki-home.js', [], '56.1.2', true);
 }
 add_action('wp_enqueue_scripts', 'gki_child_v32_assets', 100);
 
